@@ -32,7 +32,7 @@
 			}
 
 			try {
-				$res = $this->httpClient->get($this->baseUrl . $path, array(), $options)->send();
+				$res = $this->httpClient->get($this->baseUrl . $path, $options['headers'])->send();
 
 				return json_decode($res->getBody());
 			}
