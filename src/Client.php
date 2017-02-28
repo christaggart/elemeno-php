@@ -1,8 +1,8 @@
 <?php
 	namespace Elemeno;
 
-	use GuzzleHttp\Client as GuzzleHttpClient;
-	use GuzzleHttp\Exception\TransferException as GuzzleHttpTransferException;
+	use Guzzle\Http\Client as GuzzleHttpClient;
+	use Guzzle\Http\Exception\TransferException as GuzzleHttpTransferException;
 
 	class Client {
 		function __construct($apiKey)
@@ -12,27 +12,27 @@
 			$this->baseUrl = 'https://api.elemeno.io/v1/';
 			$this->singleBase = 'singles/';
 			$this->collectionBase = 'collections/';
-			$this->genericError = (object) [
+			$this->genericError = (object) array(
 				'status' => 'error',
-				'error' => (object) [
+				'error' => (object) array(
 					'message' => 'Something went wrong'
-				]
-			];
+			)
+		);
 		}
 
 		private function get($path, $query = null) {
-			$options = [
-				'headers' => [
+			$options = array(
+				'headers' => array(
 					'Authorization' => $this->apiKey
-				]
-			];
+				)
+			);
 
 			if (is_array($query)) {
 				$options['query'] = $query;
 			}
 
 			try {
-				$res = $this->httpClient->request('GET', $this->baseUrl . $path, $options);
+				$res = $this->httpClient->get($this->baseUrl . $path, array(), $options)->send();
 
 				return json_decode($res->getBody());
 			}
@@ -51,7 +51,7 @@
 		}
 
 		private function getQuery($options = null, $allow = false) {
-			$query = [];
+			$query = array();
 
 			if ($options && is_array($options)) {
 				if (array_key_exists('filters', $options) && is_array($allow) && in_array('filters', $allow)) {
@@ -75,7 +75,7 @@
 		}
 
 		function getSingles($options = null) {
-			return $this->get($this->singleBase, $this->getQuery($options, ['sort']));
+			return $this->get($this->singleBase, $this->getQuery($options, array('sort')));
 		}
 
 		function getSingle($singleSlug) {
@@ -83,7 +83,7 @@
 		}
 
 		function getCollections($options = null) {
-			return $this->get($this->collectionBase, $this->getQuery($options, ['sort']));
+			return $this->get($this->collectionBase, $this->getQuery($options, array('sort')));
 		}
 
 		function getCollection($collectionSlug) {
@@ -91,11 +91,11 @@
 		}
 
 		function getCollectionItems($collectionSlug, $options = null) {
-			return $this->get($this->collectionBase . $collectionSlug . '/items', $this->getQuery($options, ['filters', 'sort']));
+			return $this->get($this->collectionBase . $collectionSlug . '/items', $this->getQuery($options, array('filters', 'sort')));
 		}
 
 		function getCollectionItem($collectionSlug, $itemSlug, $options = null) {
-			return $this->get($this->collectionBase . $collectionSlug . '/items/' . $itemSlug, $this->getQuery($options, ['sort']));
+			return $this->get($this->collectionBase . $collectionSlug . '/items/' . $itemSlug, $this->getQuery($options, array('sort')));
 		}
 	}
 ?>
